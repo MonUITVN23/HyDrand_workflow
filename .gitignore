@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contains private keys!)
+.env
+
+# Hardhat files
+cache/
+artifacts/
+
+# TypeChain files
+typechain/
+typechain-types/
+
+# solidity-coverage files
+coverage/
+coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
+
+# Generated seed files (from DRNG workflow)
+seed_*.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# Build files
+dist/
+build/
+out/
+
+# Temporary files
+*.tmp
+*.temp
+.cache
