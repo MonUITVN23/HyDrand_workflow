@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy:testnet": "hardhat run scripts/deploy_testnet.js --network sepolia",
+    "mpc:testnet": "node scripts/mpc_script_testnet.js"
   },
   "keywords": [],
   "author": "",

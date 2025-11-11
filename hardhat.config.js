@@ -1,5 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
-require("dotenv").config(); // Tải biến môi trường từ .env
+require("dotenv").config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 if (!PRIVATE_KEY) {
@@ -10,25 +10,17 @@ if (!PRIVATE_KEY) {
 module.exports = {
   solidity: "0.8.20",
   networks: {
-    // Chain A: Nguồn (Source)
-    chainA: {
-      url: "http://127.0.0.1:8545",
+    // Chain A: Ethereum Sepolia (Source)
+    sepolia: {
+      url: process.env.SEPOLIA_RPC_URL || "https://sepolia.infura.io/v3/YOUR_INFURA_KEY",
       accounts: [PRIVATE_KEY],
-      chainId: 31337,
-      mining: { // Mô phỏng thời gian khối
-        auto: false,
-        interval: 2000 // 2 giây 1 khối
-      }
+      chainId: 11155111
     },
-    // Chain B: Đích (Destination)
-    chainB: {
-      url: "http://127.0.0.1:9545",
+    // Chain B: Polygon Amoy (Destination) - Thay thế Mumbai
+    amoy: {
+      url: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
       accounts: [PRIVATE_KEY],
-      chainId: 31338, // ChainID khác
-      mining: { // Mô phỏng thời gian khối
-        auto: false,
-        interval: 2000 // 2 giây 1 khối
-      }
+      chainId: 80002
     }
   }
 };
