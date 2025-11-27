@@ -1,16 +1,19 @@
 {
   "name": "drng-poc",
   "version": "1.0.0",
+  "description": "Distributed Random Number Generator with MPC + Pietrzak VDF + Axelar Cross-Chain",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy:testnet": "hardhat run scripts/deploy_testnet.js --network sepolia",
-    "mpc:testnet": "node scripts/mpc_script_testnet.js"
+    "deploy": "hardhat run scripts/deploy_testnet.js --network sepolia",
+    "mpc:demo": "node scripts/mpc_simulation.js",
+    "vdf:demo": "node scripts/vdf_implementation.js",
+    "attack:demo": "node scripts/attack_simulation.js",
+    "drng:full": "node scripts/complete_workflow.js",
+    "drng:fast": "node scripts/workflow_fast.js"
   },
-  "keywords": [],
+  "keywords": ["drng", "mpc", "vdf", "axelar", "cross-chain", "randomness"],
   "author": "",
-  "license": "ISC",
-  "description": "",
+  "license": "MIT",
   "dependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "dotenv": "^17.2.3",

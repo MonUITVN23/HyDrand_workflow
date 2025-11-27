@@ -2,25 +2,30 @@ require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
-if (!PRIVATE_KEY) {
-  throw new Error("PRIVATE_KEY không được tìm thấy trong file .env");
-}
 
-/** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.20",
+  solidity: {
+    version: "0.8.20",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200  // Giảm từ 200 xuống 100 để reduce contract size
+      },
+      viaIR: true  // Enable IR optimization (giảm gas)
+    }
+  },
   networks: {
-    // Chain A: Ethereum Sepolia (Source)
     sepolia: {
-      url: process.env.SEPOLIA_RPC_URL || "https://sepolia.infura.io/v3/YOUR_INFURA_KEY",
+      url: process.env.SEPOLIA_RPC_URL,
       accounts: [PRIVATE_KEY],
-      chainId: 11155111
+      chainId: 11155111,
+      gasPrice: "auto"
     },
-    // Chain B: Polygon Amoy (Destination) - Thay thế Mumbai
     amoy: {
-      url: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
+      url: process.env.AMOY_RPC_URL,
       accounts: [PRIVATE_KEY],
-      chainId: 80002
+      chainId: 80002,
+      gasPrice: "auto"
     }
   }
 };

@@ -23,7 +23,8 @@ contract ContractS {
     IAxelarGateway public gateway;
     IAxelarGasService public gasService;
     
-    string public constant DEST_CHAIN = "Polygon";
+    // FIX: Axelar testnet uses "polygon-sepolia" for Amoy (chainId 80002)
+    string public constant DEST_CHAIN = "polygon-sepolia";
     address public destContractAddress;
     
     uint256 public currentSessionId;
@@ -37,55 +38,61 @@ contract ContractS {
         address _gasServiceAddress,
         address _destContractAddress
     ) {
+        require(_gatewayAddress != address(0), "Invalid gateway");
+        require(_gasServiceAddress != address(0), "Invalid gas service");
+        require(_destContractAddress != address(0), "Invalid dest contract");
+        
         gateway = IAxelarGateway(_gatewayAddress);
         gasService = IAxelarGasService(_gasServiceAddress);
         destContractAddress = _destContractAddress;
     }
 
     function RequestRandomness(uint256 _sessionId) external {
+        require(_sessionId > 0, "Invalid session ID");
         currentSessionId = _sessionId;
         emit RandomnessRequested(_sessionId);
     }
 
     function SubmitCommitment(bytes32 _commitment) external payable {
+        require(currentSessionId > 0, "No active session");
+        require(_commitment != bytes32(0), "Invalid commitment");
+        require(msg.value > 0, "Must send gas payment");
+        
         currentCommitment = _commitment;
         emit CommitmentSubmitted(currentSessionId, _commitment);
 
-        // Encode payload for storeCommitment function on ContractD
-        bytes memory payload = abi.encodeWithSignature(
-            "storeCommitment(uint256,bytes32)",
-            currentSessionId,
-            _commitment
-        );
+        string memory destAddressStr = _toAddressString(destContractAddress);
 
-        // Pay gas for cross-chain call
+        // Axelar GMP payload - just encode the data, no function signature
+        bytes memory payload = abi.encode(currentSessionId, _commitment);
+
+        // Pay gas first
         gasService.payNativeGasForContractCall{value: msg.value}(
             address(this),
             DEST_CHAIN,
-            addressToString(destContractAddress),
+            destAddressStr,
             payload,
             msg.sender
         );
 
-        // Call Axelar Gateway
+        // Then call contract
         gateway.callContract(
             DEST_CHAIN,
-            addressToString(destContractAddress),
+            destAddressStr,
             payload
         );
     }
 
-    // Helper function to convert address to string
-    function addressToString(address _addr) internal pure returns (string memory) {
-        bytes32 _bytes = bytes32(uint256(uint160(_addr)));
-        bytes memory HEX = "0123456789abcdef";
-        bytes memory result = new bytes(42);
-        result[0] = '0';
-        result[1] = 'x';
+    function _toAddressString(address _addr) internal pure returns (string memory) {
+        bytes32 value = bytes32(uint256(uint160(_addr)));
+        bytes memory alphabet = "0123456789abcdef";
+        bytes memory str = new bytes(42);
+        str[0] = '0';
+        str[1] = 'x';
         for (uint256 i = 0; i < 20; i++) {
-            result[2 + i * 2] = HEX[uint8(_bytes[i + 12] >> 4)];
-            result[3 + i * 2] = HEX[uint8(_bytes[i + 12] & 0x0f)];
+            str[2 + i * 2] = alphabet[uint8(value[i + 12] >> 4)];
+            str[3 + i * 2] = alphabet[uint8(value[i + 12] & 0x0f)];
         }
-        return string(result);
+        return string(str);
     }
 }

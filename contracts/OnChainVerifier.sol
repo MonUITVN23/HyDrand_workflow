@@ -2,14 +2,12 @@
 pragma solidity ^0.8.20;
 
 contract OnChainVerifier {
-    bytes32 public lastRandomness;
-    uint256 public lastSessionId;
+    mapping(uint256 => bytes32) public randomness;
+    
+    event RandomnessReceived(uint256 indexed sessionId, bytes32 randomness);
 
-    event RandomnessDelivered(uint256 indexed sessionId, bytes32 randomness);
-
-    function receiveRandomness(uint256 sessionId, bytes32 randomness) external {
-        lastRandomness = randomness;
-        lastSessionId = sessionId;
-        emit RandomnessDelivered(sessionId, randomness);
+    function receiveRandomness(uint256 _sessionId, bytes32 _randomness) external {
+        randomness[_sessionId] = _randomness;
+        emit RandomnessReceived(_sessionId, _randomness);
     }
 }
